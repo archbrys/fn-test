@@ -30,6 +30,7 @@ const Row = ({ rowData, headerKeys, children }: IRow) => {
   };
 
   const getValue = (key: string, value: ITableData) => {
+    console.log(children, value);
     return children && key in children && children[key]
       ? typeof children[key] === "function"
         ? children[key](rowData) || ""

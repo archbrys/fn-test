@@ -1,0 +1,26 @@
+export const NAME = "STUDENTS";
+
+export enum StudentProperties {
+  Id = "id",
+  Name = "name",
+  Phone = "phone",
+  Email = "email",
+  Nickname = "nickname",
+}
+
+export enum OtherProperties {
+  Profile = "profile_picture",
+  Major = "major",
+  Status = "status",
+  Total_Course = "total_course",
+}
+
+export const TableHeader = [
+  { id: OtherProperties.Profile, name: "" },
+  { id: StudentProperties.Name, name: "Name", isSortable: true },
+  { id: StudentProperties.Phone, name: "Phone" },
+  { id: StudentProperties.Email, name: "Email" },
+  { id: OtherProperties.Major, name: "Major" },
+  { id: OtherProperties.Status, name: "Status" },
+  { id: OtherProperties.Total_Course, name: "Total Course" },
+];

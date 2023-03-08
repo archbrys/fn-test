@@ -1,6 +1,5 @@
 export interface ITable extends IHeader {
   data: Array<ITableData>,
-  subKey: string,
   loading: boolean,
   children?: any,
 }
@@ -21,7 +20,6 @@ export interface ITableData {
 export interface IBody {
   data: Array<ITableData>
   headerKeys: string[]
-  subKey?: string
   children?: any
 }
 
@@ -29,7 +27,6 @@ export interface IRow {
   rowData: ITableData
   headerKeys: string[]
   children?: any
-  hasSubkey?: boolean
 }
 
 export interface IHeader {

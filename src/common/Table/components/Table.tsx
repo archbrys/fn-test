@@ -2,11 +2,11 @@ import React from "react";
 import Header from "./Header";
 import Body from "./Body";
 import { ITable } from "../interface";
+import { Table as TableUI, TableContainer } from "@chakra-ui/react";
 
 const Table = ({
   data,
   headers,
-  subKey,
   sortBy,
   sortDirection,
   loading,
@@ -18,20 +18,17 @@ const Table = ({
   return (
     <>
       {loading && <span>lading</span>}
-      <table>
-        <Header
-          headers={headers}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSort={onSort}
-        />
-        <Body
-          data={data}
-          subKey={subKey}
-          headerKeys={headerKeys}
-          children={children}
-        />
-      </table>
+      <TableContainer>
+        <TableUI>
+          <Header
+            headers={headers}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={onSort}
+          />
+          <Body data={data} headerKeys={headerKeys} children={children} />
+        </TableUI>
+      </TableContainer>
     </>
   );
 };
