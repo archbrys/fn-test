@@ -1,10 +1,18 @@
 import React from "react";
-import logo from "./logo.svg";
-import { Counter } from "./features/counter/Counter";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Students from "./modules/Students";
+import Profile from "./modules/Profile";
 
 function App() {
-  return <div className="App">test</div>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Students />} />
+        <Route path="/:id" element={<Profile />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
