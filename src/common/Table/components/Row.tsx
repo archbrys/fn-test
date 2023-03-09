@@ -1,8 +1,7 @@
-import { Td, Tr } from "@chakra-ui/react";
-import React from "react";
+import React, { useCallback } from "react";
 import { IRow, ITableData } from "../interface";
 
-const Row = ({ rowData, headerKeys, children }: IRow) => {
+const Row = ({ rowData, headerKeys, children, onRowClick }: IRow) => {
   // Add the missing key value
   const sanitizeRowData = (data: ITableData): ITableData => {
     const newData = { ...data };
@@ -30,7 +29,6 @@ const Row = ({ rowData, headerKeys, children }: IRow) => {
   };
 
   const getValue = (key: string, value: ITableData) => {
-    console.log(children, value);
     return children && key in children && children[key]
       ? typeof children[key] === "function"
         ? children[key](rowData) || ""
@@ -38,15 +36,23 @@ const Row = ({ rowData, headerKeys, children }: IRow) => {
       : value;
   };
 
+  const handleOnClick = useCallback((): void => {
+    if (onRowClick) onRowClick(rowData);
+  }, []);
+
   return (
     <>
-      <Tr>
+      <tr>
         {getCells(rowData).map(
           ([key, value]: [string, ITableData]): JSX.Element => {
-            return <Td key={`${key}-td`}>{getValue(key, value)}</Td>;
+            return (
+              <td onClick={() => handleOnClick()} key={`${key}-td`}>
+                {getValue(key, value)}
+              </td>
+            );
           },
         )}
-      </Tr>
+      </tr>
     </>
   );
 };

@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 import Body from "./Body";
 import { ITable } from "../interface";
-import { Table as TableUI, TableContainer } from "@chakra-ui/react";
+import TableUI from "react-bootstrap/Table";
 
 const Table = ({
   data,
@@ -11,6 +11,7 @@ const Table = ({
   sortDirection,
   loading,
   onSort,
+  onRowClick,
   children,
 }: ITable): JSX.Element => {
   const headerKeys = headers.map((header) => header.id);
@@ -18,17 +19,20 @@ const Table = ({
   return (
     <>
       {loading && <span>lading</span>}
-      <TableContainer>
-        <TableUI>
-          <Header
-            headers={headers}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={onSort}
-          />
-          <Body data={data} headerKeys={headerKeys} children={children} />
-        </TableUI>
-      </TableContainer>
+      <TableUI striped bordered hover>
+        <Header
+          headers={headers}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+        />
+        <Body
+          data={data}
+          headerKeys={headerKeys}
+          children={children}
+          onRowClick={onRowClick}
+        />
+      </TableUI>
     </>
   );
 };

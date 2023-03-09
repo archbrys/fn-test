@@ -1,11 +1,13 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
-import studentReducer from '../modules/Students/reducer'
+import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import studentReducer from "../modules/Students/reducer";
+import courseReducer from "../modules/Course/reducer";
+import profileReducer from "../modules/Profile/reducer";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
-    student: studentReducer
+    student: studentReducer,
+    course: courseReducer,
+    profile: profileReducer,
   },
 });
 

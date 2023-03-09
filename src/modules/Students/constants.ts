@@ -24,3 +24,14 @@ export const TableHeader = [
   { id: OtherProperties.Status, name: "Status" },
   { id: OtherProperties.Total_Course, name: "Total Course" },
 ];
+
+type StatusType = {
+  [key: string]: string;
+};
+
+export const Status: StatusType = {
+  1: "Good",
+  2: "Probation",
+  3: "Inactive",
+  withdrawn: "Withdrawn",
+};

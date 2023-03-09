@@ -1,30 +1,33 @@
-import { AspectRatio, Image } from "@chakra-ui/react";
-import styled from "@emotion/styled";
 import React, { useEffect, useMemo } from "react";
 import Images from "../../../common/Images";
 import Table, { useTableState } from "../../../common/Table";
 import { ITableData } from "../../../common/Table/interface";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { fetchCourses } from "../../Course/actions";
+import { fetchProfiles } from "../../Profile/actions";
+import { IProfileStatus } from "../../Profile/interface";
 import { fetchStudents } from "../actions";
-import { OtherProperties, TableHeader } from "../constants";
+import { OtherProperties, Status, TableHeader } from "../constants";
+import { useGetStudentData } from "../hooks/useGetUserData";
 import { IStudent } from "../interface";
 import { studentState } from "../reducer";
 
-interface ImageProps {
-  src: string;
-}
-const ImageHolder = styled.div<ImageProps>`
-  background-image: ${(props) => (props.src ? `url(${props.src})` : null)};
-`;
+import { Container } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { CustomImage } from "../styles";
 
 const Students = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { students, status } = useAppSelector(studentState);
   const { sortBy, setSortBy, sortDirection, setSortDirection } =
     useTableState();
+  const { data, loading, getStatusValue } = useGetStudentData();
 
   useEffect(() => {
-    dispatch(fetchStudents());
+    // dispatch(fetchStudents());
+    // dispatch(fetchCourses());
+    // dispatch(fetchProfiles());
   }, []);
 
   const sort = (data: IStudent[]) => {
@@ -58,31 +61,45 @@ const Students = (): JSX.Element => {
 
   const sanitizeData = useMemo(
     (): ITableData[] =>
-      students.map((student) => {
+      data.map((student) => {
         const newStudent: ITableData = {
           ...(student as unknown as ITableData),
         };
+        let profile =
+          Array.isArray(newStudent.profiles) && !newStudent.profiles.length
+            ? []
+            : newStudent.profiles[0] || [];
 
-        newStudent.profile_picture = `user_${newStudent?.id}`;
+        newStudent.profile_picture = `${profile?.user_id}`;
 
         return newStudent;
       }),
-    [students],
+    [data],
   );
 
   const sanitizeTableData = (data: ITableData, key: string) => {
     switch (key) {
-      case "profile_picture": {
+      case OtherProperties.Profile: {
         return (
-          <Image
-            borderRadius="full"
-            objectFit="cover"
-            boxSize="100px"
-            src={Images[data.profile_picture]}
-            fallbackSrc={Images.default}
+          <CustomImage
+            roundedCircle
+            fluid
+            src={Images[data.profile_picture] || Images.default}
             alt={data.name}
           />
         );
+      }
+
+      case OtherProperties.Major: {
+        return data.profiles[0]?.major || "";
+      }
+
+      case OtherProperties.Status: {
+        return getStatusValue(data.profiles);
+      }
+
+      case OtherProperties.Total_Course: {
+        return !data.courses.length ? "0" : data.courses.length;
       }
 
       default:
@@ -90,25 +107,36 @@ const Students = (): JSX.Element => {
     }
   };
 
+  const handleRowClick = (data: ITableData): void => {
+    navigate(`/${data.id}`);
+  };
+
   return (
     <>
       {status === "loading" ? (
         <span>Loading...</span>
       ) : (
-        <>
+        <Container>
           <Table
             data={sanitizeData}
             headers={TableHeader}
             onSort={() => null}
             sortBy={sortBy}
             sortDirection={sortDirection}
+            onRowClick={handleRowClick}
           >
             {{
               [OtherProperties.Profile]: (data: ITableData) =>
-                sanitizeTableData(data, "profile_picture"),
+                sanitizeTableData(data, OtherProperties.Profile),
+              [OtherProperties.Major]: (data: ITableData) =>
+                sanitizeTableData(data, OtherProperties.Major),
+              [OtherProperties.Status]: (data: ITableData) =>
+                sanitizeTableData(data, OtherProperties.Status),
+              [OtherProperties.Total_Course]: (data: ITableData) =>
+                sanitizeTableData(data, OtherProperties.Total_Course),
             }}
           </Table>
-        </>
+        </Container>
       )}
       {students.length === 0 && <span>"No data found"</span>}
     </>

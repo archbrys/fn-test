@@ -1,4 +1,3 @@
-import { Thead, Tr } from "@chakra-ui/react";
 import React from "react";
 import { IHeader, ITableHeader } from "../interface";
 
@@ -25,13 +24,13 @@ const Header = ({ headers, sortBy, sortDirection, onSort }: IHeader) => {
   };
 
   return (
-    <Thead>
-      <Tr>
+    <thead>
+      <tr>
         {headers.map((headerCell) =>
           renderHeaderCell(headerCell.id, headerCell),
         )}
-      </Tr>
-    </Thead>
+      </tr>
+    </thead>
   );
 };
 
