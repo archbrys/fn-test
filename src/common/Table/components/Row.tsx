@@ -42,20 +42,16 @@ const Row = ({
       : value;
   };
 
-  const handleOnClick = useCallback((): void => {
+  const handleOnClick = useCallback((rowData: ITableData): void => {
     if (onRowClick) onRowClick(rowData);
   }, []);
 
   return (
     <>
-      <tr>
+      <tr onClick={() => handleOnClick(rowData)}>
         {getCells(rowData).map(
           ([key, value]: [string, ITableData]): JSX.Element => {
-            return (
-              <td onClick={() => handleOnClick()} key={`${key}-td`}>
-                {getValue(key, value)}
-              </td>
-            );
+            return <td key={`${key}-td`}>{getValue(key, value)}</td>;
           },
         )}
       </tr>
