@@ -4,6 +4,9 @@ const useTableState = () => {
   const [data, setData] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [sortDirection, setSortDirection] = useState("");
+  const [sortDepthKey, setSortDepthKey] = useState<string | undefined>(
+    undefined,
+  );
 
   return {
     data,
@@ -11,7 +14,9 @@ const useTableState = () => {
     sortBy,
     setSortBy,
     sortDirection,
-    setSortDirection
+    setSortDirection,
+    sortDepthKey,
+    setSortDepthKey,
   };
 };
 

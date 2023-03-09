@@ -7,46 +7,47 @@ import { fetchCourses } from "../../Course/actions";
 import { fetchProfiles } from "../../Profile/actions";
 import { IProfileStatus } from "../../Profile/interface";
 import { fetchStudents } from "../actions";
-import { OtherProperties, Status, TableHeader } from "../constants";
+import {
+  OtherProperties,
+  Status,
+  StudentProperties,
+  TableHeader,
+} from "../constants";
 import { useGetStudentData } from "../hooks/useGetUserData";
 import { IStudent } from "../interface";
 import { studentState } from "../reducer";
 
-import { Container } from "react-bootstrap";
+import { Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { CustomImage } from "../styles";
+import { CustomImage, InputText } from "../styles";
 
 const Students = (): JSX.Element => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { students, status } = useAppSelector(studentState);
-  const { sortBy, setSortBy, sortDirection, setSortDirection } =
-    useTableState();
-  const { data, loading, getStatusValue } = useGetStudentData();
+  const {
+    sortBy,
+    setSortBy,
+    sortDirection,
+    setSortDirection,
+    sortDepthKey,
+    setSortDepthKey,
+  } = useTableState();
+  const { data, loading, getStatusValue, setFilter } = useGetStudentData();
 
-  useEffect(() => {
-    // dispatch(fetchStudents());
-    // dispatch(fetchCourses());
-    // dispatch(fetchProfiles());
-  }, []);
-
-  const sort = (data: IStudent[]) => {
+  const sort = (data: ITableData[]) => {
     if (sortBy === undefined && sortDirection === undefined) return data;
-    return data.sort(comparator);
+    return data.sort(comparator(sortDepthKey));
   };
 
-  const comparator = (a: IStudent, b: IStudent) => {
-    const resultValue = getComparatorCondition(a, b, sortBy);
-
-    if (resultValue === 0) {
-      if (sortBy === "phone" || sortBy === "email") {
-        return getComparatorCondition(a, b, "name");
-      }
+  const comparator = (key: any) => (a: ITableData, b: ITableData) => {
+    if (key) {
+      return getComparatorCondition(a[key], b[key], sortBy);
     }
-    return resultValue;
+
+    return getComparatorCondition(a, b, sortBy);
   };
 
-  const getComparatorCondition = (a: IStudent, b: IStudent, by: string) => {
+  const getComparatorCondition = (a: ITableData, b: ITableData, by: string) => {
     const x = sortDirection === "desc" ? b[by] : a[by];
     const y = sortDirection === "desc" ? a[by] : b[by];
     if (x < y) {
@@ -65,12 +66,8 @@ const Students = (): JSX.Element => {
         const newStudent: ITableData = {
           ...(student as unknown as ITableData),
         };
-        let profile =
-          Array.isArray(newStudent.profiles) && !newStudent.profiles.length
-            ? []
-            : newStudent.profiles[0] || [];
 
-        newStudent.profile_picture = `${profile?.user_id}`;
+        newStudent.profile_picture = `${newStudent.profile?.user_id}`;
 
         return newStudent;
       }),
@@ -79,6 +76,10 @@ const Students = (): JSX.Element => {
 
   const sanitizeTableData = (data: ITableData, key: string) => {
     switch (key) {
+      case StudentProperties.Name: {
+        const nickname = data.nickname ? ` (${data.nickname})` : "";
+        return `${data.name} ${nickname}`;
+      }
       case OtherProperties.Profile: {
         return (
           <CustomImage
@@ -91,11 +92,11 @@ const Students = (): JSX.Element => {
       }
 
       case OtherProperties.Major: {
-        return data.profiles[0]?.major || "";
+        return data.profile?.major || "";
       }
 
       case OtherProperties.Status: {
-        return getStatusValue(data.profiles);
+        return getStatusValue(data.profile);
       }
 
       case OtherProperties.Total_Course: {
@@ -107,38 +108,53 @@ const Students = (): JSX.Element => {
     }
   };
 
+  const handleSort = (headerId: string, key: string | undefined) => {
+    let newDirection =
+      sortDirection === "" || sortDirection === "desc" ? "asc" : "desc";
+    if (headerId !== sortBy) newDirection = "asc";
+    setSortDirection(newDirection);
+    setSortBy(headerId);
+    setSortDepthKey(key);
+  };
+
   const handleRowClick = (data: ITableData): void => {
     navigate(`/${data.id}`);
   };
 
   return (
     <>
-      {status === "loading" ? (
-        <span>Loading...</span>
-      ) : (
-        <Container>
-          <Table
-            data={sanitizeData}
-            headers={TableHeader}
-            onSort={() => null}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onRowClick={handleRowClick}
-          >
-            {{
-              [OtherProperties.Profile]: (data: ITableData) =>
-                sanitizeTableData(data, OtherProperties.Profile),
-              [OtherProperties.Major]: (data: ITableData) =>
-                sanitizeTableData(data, OtherProperties.Major),
-              [OtherProperties.Status]: (data: ITableData) =>
-                sanitizeTableData(data, OtherProperties.Status),
-              [OtherProperties.Total_Course]: (data: ITableData) =>
-                sanitizeTableData(data, OtherProperties.Total_Course),
-            }}
-          </Table>
-        </Container>
-      )}
-      {students.length === 0 && <span>"No data found"</span>}
+      <Container>
+        <InputText
+          className="mW-100"
+          type="email"
+          placeholder="Search"
+          onChange={(e) => setFilter(e.target.value)}
+          disabled={loading}
+        />
+
+        <Table
+          data={sort(sanitizeData)}
+          headers={TableHeader}
+          onSort={handleSort}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onRowClick={handleRowClick}
+          loading={loading}
+        >
+          {{
+            [StudentProperties.Name]: (data: ITableData) =>
+              sanitizeTableData(data, StudentProperties.Name),
+            [OtherProperties.Profile]: (data: ITableData) =>
+              sanitizeTableData(data, OtherProperties.Profile),
+            [OtherProperties.Major]: (data: ITableData) =>
+              sanitizeTableData(data, OtherProperties.Major),
+            [OtherProperties.Status]: (data: ITableData) =>
+              sanitizeTableData(data, OtherProperties.Status),
+            [OtherProperties.Total_Course]: (data: ITableData) =>
+              sanitizeTableData(data, OtherProperties.Total_Course),
+          }}
+        </Table>
+      </Container>
     </>
   );
 };

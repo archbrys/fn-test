@@ -1,5 +1,5 @@
 export interface ITable extends IHeader {
-  data: Array<ITableData>;
+  data: ITableData[] | ITableData[][];
   loading: boolean;
   children?: any;
   onRowClick?: (data: ITableData) => void;
@@ -10,6 +10,7 @@ export interface ITableHeader {
   name: string;
   isSortable?: boolean | undefined;
   tableSpacing?: number;
+  key?: string;
 }
 
 export interface ITableData {
@@ -18,14 +19,16 @@ export interface ITableData {
 }
 
 export interface IBody {
-  data: Array<ITableData>;
+  data: ITableData[] | ITableData[][];
   headerKeys: string[];
   children?: any;
   onRowClick?: (data: ITableData) => void;
+  loading: boolean;
 }
 
 export interface IRow {
   rowData: ITableData;
+  previousData: ITableData;
   headerKeys: string[];
   children?: any;
   onRowClick?: (data: ITableData) => void;
@@ -35,5 +38,5 @@ export interface IHeader {
   headers: ITableHeader[];
   sortBy?: string;
   sortDirection?: string;
-  onSort: (headerId: string) => void;
+  onSort: (headerId: string, key: string | undefined) => void;
 }

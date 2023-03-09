@@ -20,8 +20,18 @@ export const TableHeader = [
   { id: StudentProperties.Name, name: "Name", isSortable: true },
   { id: StudentProperties.Phone, name: "Phone" },
   { id: StudentProperties.Email, name: "Email" },
-  { id: OtherProperties.Major, name: "Major" },
-  { id: OtherProperties.Status, name: "Status" },
+  {
+    id: OtherProperties.Major,
+    name: "Major",
+    isSortable: true,
+    key: "profile",
+  },
+  {
+    id: OtherProperties.Status,
+    name: "Status",
+    isSortable: true,
+    key: "profile",
+  },
   { id: OtherProperties.Total_Course, name: "Total Course" },
 ];
 

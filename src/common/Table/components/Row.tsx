@@ -1,7 +1,13 @@
 import React, { useCallback } from "react";
 import { IRow, ITableData } from "../interface";
 
-const Row = ({ rowData, headerKeys, children, onRowClick }: IRow) => {
+const Row = ({
+  rowData,
+  previousData,
+  headerKeys,
+  children,
+  onRowClick,
+}: IRow) => {
   // Add the missing key value
   const sanitizeRowData = (data: ITableData): ITableData => {
     const newData = { ...data };
@@ -31,7 +37,7 @@ const Row = ({ rowData, headerKeys, children, onRowClick }: IRow) => {
   const getValue = (key: string, value: ITableData) => {
     return children && key in children && children[key]
       ? typeof children[key] === "function"
-        ? children[key](rowData) || ""
+        ? children[key](rowData, previousData) || ""
         : children[key] || ""
       : value;
   };

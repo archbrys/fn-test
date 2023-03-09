@@ -3,6 +3,7 @@ import Header from "./Header";
 import Body from "./Body";
 import { ITable } from "../interface";
 import TableUI from "react-bootstrap/Table";
+import { Message } from "../styles";
 
 const Table = ({
   data,
@@ -18,7 +19,6 @@ const Table = ({
 
   return (
     <>
-      {loading && <span>lading</span>}
       <TableUI striped bordered hover>
         <Header
           headers={headers}
@@ -31,8 +31,10 @@ const Table = ({
           headerKeys={headerKeys}
           children={children}
           onRowClick={onRowClick}
+          loading={loading}
         />
       </TableUI>
+      {data.length === 0 ? <Message>No data found</Message> : null}
     </>
   );
 };

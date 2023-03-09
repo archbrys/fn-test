@@ -14,7 +14,7 @@ import { studentState } from "../reducer";
 
 interface IUserData extends IStudent {
   courses: ICourse[];
-  profiles: IProfile[];
+  profile: IProfile | undefined;
 }
 
 interface InitialValue {
@@ -31,6 +31,7 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
   const [student, setStudent] = useState<IUserData | undefined>(undefined);
   const [data, setData] = useState<IUserData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState("");
 
   const handleFetchStudents = useCallback((): void => {
     if (students.length !== 0 && studentStatus === STATUS.Idle) return;
@@ -77,18 +78,18 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
             (course: ICourse) => `user_${student.id}` === course.user_id,
           ),
         ),
-        profiles: profiles.filter(
+        profile: profiles.find(
           (profile: IProfile) => `user_${student.id}` === profile.user_id,
         ),
       };
     });
+
     setLoading(false);
     setData(newStudents);
   }, [students, profiles, courses]);
 
   const getStudent = () => {
     if (id) {
-      console.log(data, id);
       const _student = data.find((value) => {
         return value.id === id;
       });
@@ -97,14 +98,14 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
     }
   };
 
-  const getStatusValue = (profiles: IProfile[] | undefined) => {
+  const getStatusValue = (profile: IProfile | undefined) => {
     if (!profiles) return "";
     let latestStatus =
-      Array.isArray(profiles) && !profiles.length
+      Array.isArray(profile?.status) && !profile?.status.length
         ? []
-        : profiles[0].status || [];
+        : profile?.status || [];
 
-    let statusValue = !latestStatus.length
+    let statusValue = !profile?.status.length
       ? "withdrawn"
       : latestStatus.reduce((a: IProfileStatus, b: IProfileStatus) =>
           a.date > b.date ? a : b,
@@ -112,6 +113,23 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
 
     return Status[statusValue];
   };
+
+  const fuzzySearch = useCallback(() => {
+    if (filter === "") return data;
+
+    return data.filter(({ name, phone, email, profile }) => {
+      if (name.toLowerCase().includes(filter.toLowerCase())) return true;
+      if (phone.toLowerCase().includes(filter.toLowerCase())) return true;
+      if (email.toLowerCase().includes(filter.toLowerCase())) return true;
+      if (profile?.major.toLowerCase().includes(filter.toLowerCase()))
+        return true;
+
+      const status = getStatusValue(profile);
+      if (status.toLowerCase().includes(filter.toLowerCase())) return true;
+
+      return false;
+    });
+  }, [filter, data]);
 
   useEffect(() => {
     handleFetchStudents();
@@ -128,9 +146,10 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
   }, [data]);
 
   return {
-    data,
+    data: fuzzySearch(),
     loading,
     student,
     getStatusValue,
+    setFilter,
   };
 };
