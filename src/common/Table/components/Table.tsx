@@ -4,6 +4,7 @@ import Body from "./Body";
 import { ITable } from "../interface";
 import TableUI from "react-bootstrap/Table";
 import { Message } from "../styles";
+import Loader from "./Loader";
 
 const Table = ({
   data,
@@ -34,7 +35,10 @@ const Table = ({
           loading={loading}
         />
       </TableUI>
-      {data.length === 0 ? <Message>No data found</Message> : null}
+
+      {loading ? null : Array.isArray(data) && data.length === 0 ? (
+        <Message>No data found</Message>
+      ) : null}
     </>
   );
 };

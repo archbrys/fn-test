@@ -1,21 +1,48 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Images from "../../../common/Images";
 import Table, { useTableState } from "../../../common/Table";
 import { ITableData } from "../../../common/Table/interface";
-import { useGetStudentData } from "../../Students/hooks/useGetUserData";
+import { useGetStudentData } from "../../../common/hooks/useGetUserData";
 import { CustomImage } from "../../Students/styles";
 import { CourseProperties, ProfileTableHeader } from "../constants";
+import useCurrencyExchange from "../../../common/hooks/useCurrencyExchange";
+import { ICurrency } from "../../Currency/interface";
+import styled from "@emotion/styled";
+
+const Box = styled.div`
+  display: block;
+  margin: 15px 30px;
+`;
+
+const Name = styled.h4`
+  text-align: center;
+`;
+
 const Profile = (): JSX.Element => {
   let { id } = useParams();
   const { student, loading, getStatusValue } = useGetStudentData({
     id: parseInt(id!),
   });
-  const { sortBy, setSortBy, sortDirection, setSortDirection } =
-    useTableState();
+  const {
+    sortBy,
+    setSortBy,
+    sortDirection,
+    setSortDirection,
+    setSortDepthKey,
+    sort,
+  } = useTableState();
 
-  const groupCrouse = useCallback((): ITableData[] => {
+  const {
+    error: currencyError,
+    currencyList,
+    rate,
+    currency,
+    setSelectedCurrency,
+  } = useCurrencyExchange();
+
+  const sanitizeData = useMemo((): ITableData[] => {
     const result =
       student?.courses.reduce(function (accumulator, a) {
         accumulator[a.semester_code] = accumulator[a.semester_code] || [];
@@ -28,8 +55,8 @@ const Profile = (): JSX.Element => {
 
   const sanitizeTableData = (
     data: ITableData,
-    previousData: ITableData,
     key: string,
+    previousData?: ITableData,
   ) => {
     switch (key) {
       case CourseProperties.Semester_Code: {
@@ -42,9 +69,33 @@ const Profile = (): JSX.Element => {
         return data[key];
       }
 
+      case CourseProperties.Course_Fee: {
+        if (data[key]) {
+          console.log(rate, !currencyError);
+          if (rate && !currencyError) {
+            if (currency) {
+              return `${currency.symbol_native}${(rate * data[key]).toFixed(
+                2,
+              )}`;
+            }
+          }
+          return `$${data[key]}`;
+        }
+        return "";
+      }
+
       default:
         return "-";
     }
+  };
+
+  const handleSort = (headerId: string, key: string | undefined) => {
+    let newDirection =
+      sortDirection === "" || sortDirection === "desc" ? "asc" : "desc";
+    if (headerId !== sortBy) newDirection = "asc";
+    setSortDirection(newDirection);
+    setSortBy(headerId);
+    setSortDepthKey(key);
   };
 
   const nickname = student?.nickname ? ` (${student?.nickname})` : "";
@@ -59,22 +110,46 @@ const Profile = (): JSX.Element => {
               roundedCircle
               width="150px"
               height="150px"
-              src={Images[student?.profile?.user_id!] || Images.default}
+              src={Images[student?.profile?.user_img!] || Images.default}
             />
-            <h6>
-              Name: {student?.name} {nickname}
-            </h6>
-            <h6>Major: {student?.profile?.major}</h6>
-            <h6>Year: {student?.profile?.year}</h6>
-            <h6>Status: {getStatusValue(student?.profile)}</h6>
+            <Box>
+              <Name>
+                {student?.name} {nickname}
+              </Name>
+              <h6>Major: {student?.profile?.major}</h6>
+              <h6>Year: {student?.profile?.year}</h6>
+              <h6>Status: {getStatusValue(student?.profile)}</h6>
+              <h6>
+                {" "}
+                Currency Type:{" "}
+                <select
+                  name="currency"
+                  onChange={(e) => setSelectedCurrency(e.target.value)}
+                >
+                  {Object.values(currencyList).map((c: ICurrency) => (
+                    <option key={c.code} value={c.code}>
+                      {c.code}
+                    </option>
+                  ))}
+                </select>
+                {currencyError && (
+                  <span>
+                    <br />
+                    <br />
+                    "Unsupported currency type"
+                  </span>
+                )}
+              </h6>
+            </Box>
           </Col>
           <Col xs={8}>
             <Table
-              data={groupCrouse()}
+              data={sort(sanitizeData.flat(2))}
               headers={ProfileTableHeader}
-              onSort={() => null}
+              onSort={handleSort}
               sortBy={sortBy}
               sortDirection={sortDirection}
+              loading={loading}
             >
               {{
                 [CourseProperties.Semester_Code]: (
@@ -83,9 +158,12 @@ const Profile = (): JSX.Element => {
                 ) =>
                   sanitizeTableData(
                     data,
-                    previousData,
+
                     CourseProperties.Semester_Code,
+                    previousData,
                   ),
+                [CourseProperties.Course_Fee]: (data: ITableData) =>
+                  sanitizeTableData(data, CourseProperties.Course_Fee),
               }}
             </Table>
           </Col>

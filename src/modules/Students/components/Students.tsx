@@ -1,65 +1,27 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import Images from "../../../common/Images";
 import Table, { useTableState } from "../../../common/Table";
 import { ITableData } from "../../../common/Table/interface";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { fetchCourses } from "../../Course/actions";
-import { fetchProfiles } from "../../Profile/actions";
-import { IProfileStatus } from "../../Profile/interface";
-import { fetchStudents } from "../actions";
-import {
-  OtherProperties,
-  Status,
-  StudentProperties,
-  TableHeader,
-} from "../constants";
-import { useGetStudentData } from "../hooks/useGetUserData";
-import { IStudent } from "../interface";
-import { studentState } from "../reducer";
 
-import { Container, Form } from "react-bootstrap";
+import { OtherProperties, StudentProperties, TableHeader } from "../constants";
+import { useGetStudentData } from "../../../common/hooks/useGetUserData";
+
+import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CustomImage, InputText } from "../styles";
 
 const Students = (): JSX.Element => {
   const navigate = useNavigate();
-  const { students, status } = useAppSelector(studentState);
   const {
     sortBy,
     setSortBy,
     sortDirection,
     setSortDirection,
-    sortDepthKey,
     setSortDepthKey,
+    sort,
   } = useTableState();
   const { data, loading, getStatusValue, setFilter } = useGetStudentData();
-
-  const sort = (data: ITableData[]) => {
-    if (sortBy === undefined && sortDirection === undefined) return data;
-    return data.sort(comparator(sortDepthKey));
-  };
-
-  const comparator = (key: any) => (a: ITableData, b: ITableData) => {
-    if (key) {
-      return getComparatorCondition(a[key], b[key], sortBy);
-    }
-
-    return getComparatorCondition(a, b, sortBy);
-  };
-
-  const getComparatorCondition = (a: ITableData, b: ITableData, by: string) => {
-    const x = sortDirection === "desc" ? b[by] : a[by];
-    const y = sortDirection === "desc" ? a[by] : b[by];
-    if (x < y) {
-      return -1;
-    }
-    if (x > y) {
-      return 1;
-    }
-
-    return 0;
-  };
-
+  console.log(loading);
   const sanitizeData = useMemo(
     (): ITableData[] =>
       data.map((student) => {
@@ -67,7 +29,7 @@ const Students = (): JSX.Element => {
           ...(student as unknown as ITableData),
         };
 
-        newStudent.profile_picture = `${newStudent.profile?.user_id}`;
+        newStudent.profile_picture = `${newStudent.profile?.user_img}`;
 
         return newStudent;
       }),

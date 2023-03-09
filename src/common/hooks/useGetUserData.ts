@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { STATUS } from "../../../common/Constants";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { fetchCourses } from "../../Course/actions";
-import { ICourse } from "../../Course/interface";
-import { courseState } from "../../Course/reducer";
-import { fetchProfiles } from "../../Profile/actions";
-import { IProfile, IProfileStatus } from "../../Profile/interface";
-import { profileState } from "../../Profile/reducer";
-import { fetchStudents } from "../actions";
-import { Status } from "../constants";
-import { IStudent } from "../interface";
-import { studentState } from "../reducer";
+import { STATUS } from "../Constants";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchCourses } from "../../modules/Course/actions";
+import { ICourse } from "../../modules/Course/interface";
+import { courseState } from "../../modules/Course/reducer";
+import { fetchProfiles } from "../../modules/Profile/actions";
+import { IProfile, IProfileStatus } from "../../modules/Profile/interface";
+import { profileState } from "../../modules/Profile/reducer";
+import { fetchStudents } from "../../modules/Students/actions";
+import { Status } from "../../modules/Students/constants";
+import { IStudent } from "../../modules/Students/interface";
+import { studentState } from "../../modules/Students/reducer";
 
 interface IUserData extends IStudent {
   courses: ICourse[];
@@ -68,8 +68,6 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
   };
 
   const getData = useCallback(() => {
-    setLoading(true);
-
     const newStudents = students.map((student: IStudent) => {
       return {
         ...student,
@@ -84,8 +82,10 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
       };
     });
 
-    setLoading(false);
-    setData(newStudents);
+    if (newStudents.length !== 0) {
+      setLoading(false);
+      setData(newStudents);
+    }
   }, [students, profiles, courses]);
 
   const getStudent = () => {
@@ -132,12 +132,14 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
   }, [filter, data]);
 
   useEffect(() => {
+    setLoading(true);
     handleFetchStudents();
     handleFetchProfiles();
     handleFetchCourses();
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     getData();
   }, [students, profiles, courses]);
 

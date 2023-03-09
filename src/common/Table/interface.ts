@@ -23,7 +23,7 @@ export interface IBody {
   headerKeys: string[];
   children?: any;
   onRowClick?: (data: ITableData) => void;
-  loading: boolean;
+  loading?: boolean;
 }
 
 export interface IRow {

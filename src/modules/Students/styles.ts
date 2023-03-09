@@ -6,6 +6,8 @@ export const CustomImage = styled(Image)`
   width: ${(props) => props.width || "50px"};
   height: ${(props) => props.height || "50px"};
   object-fit: cover;
+  display: block;
+  margin: 0 auto;
 `;
 
 export const InputText = styled(Form.Control)`

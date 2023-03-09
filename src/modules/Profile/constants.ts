@@ -8,8 +8,12 @@ export enum CourseProperties {
 }
 
 export const ProfileTableHeader = [
-  { id: CourseProperties.Semester_Code, name: "Semester Code" },
-  { id: CourseProperties.Course_Name, name: "Course Name", isSortable: true },
+  {
+    id: CourseProperties.Semester_Code,
+    name: "Semester Code",
+    isSortable: true,
+  },
+  { id: CourseProperties.Course_Name, name: "Course Name" },
   { id: CourseProperties.Course_Selection, name: "Course Selection" },
   { id: CourseProperties.Course_Fee, name: "Course Fee" },
 ];

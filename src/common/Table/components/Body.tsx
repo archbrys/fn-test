@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Placeholder } from "react-bootstrap";
+
 import { IBody, ITableData } from "../interface";
 import Loader from "./Loader";
 import Row from "./Row";
