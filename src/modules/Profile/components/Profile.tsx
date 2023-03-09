@@ -72,7 +72,6 @@ const Profile = (): JSX.Element => {
 
       case CourseProperties.Course_Fee: {
         if (data[key]) {
-          console.log(rate, !currencyError);
           if (rate && !currencyError) {
             if (currency) {
               return `${currency.symbol_native}${(rate * data[key]).toFixed(

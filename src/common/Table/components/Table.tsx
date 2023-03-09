@@ -4,7 +4,6 @@ import Body from "./Body";
 import { ITable } from "../interface";
 import TableUI from "react-bootstrap/Table";
 import { Message } from "../styles";
-import Loader from "./Loader";
 
 const Table = ({
   data,

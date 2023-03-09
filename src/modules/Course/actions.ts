@@ -9,7 +9,7 @@ export const fetchCourses = createAsyncThunk(
       method: "get",
       url: "https://run.mocky.io/v3/34bdbb5f-70c0-41ce-aa0c-2bf46befa477",
     });
-    // The value we return becomes the `fulfilled` action payload
+
     return response.data;
   },
 );

@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { STATUS } from "../Constants";
+
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchCourses } from "../../modules/Course/actions";
 import { ICourse } from "../../modules/Course/interface";
 import { courseState } from "../../modules/Course/reducer";
 import { fetchProfiles } from "../../modules/Profile/actions";
-import { IProfile, IProfileStatus } from "../../modules/Profile/interface";
+import { IProfile } from "../../modules/Profile/interface";
 import { profileState } from "../../modules/Profile/reducer";
 import { fetchStudents, getStatusValue } from "../../modules/Students/actions";
-import { Status } from "../../modules/Students/constants";
 import { IStudent } from "../../modules/Students/interface";
 import { studentState } from "../../modules/Students/reducer";
+import { STATUS } from "../constants";
 
 interface IUserData extends IStudent {
   courses: ICourse[];
