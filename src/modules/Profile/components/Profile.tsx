@@ -10,6 +10,7 @@ import { CourseProperties, ProfileTableHeader } from "../constants";
 import useCurrencyExchange from "../../../common/hooks/useCurrencyExchange";
 import { ICurrency } from "../../Currency/interface";
 import styled from "@emotion/styled";
+import { getStatusValue } from "../../Students/actions";
 
 const Box = styled.div`
   display: block;
@@ -22,7 +23,7 @@ const Name = styled.h4`
 
 const Profile = (): JSX.Element => {
   let { id } = useParams();
-  const { student, loading, getStatusValue } = useGetStudentData({
+  const { student, loading } = useGetStudentData({
     id: parseInt(id!),
   });
   const {

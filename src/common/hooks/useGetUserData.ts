@@ -7,7 +7,7 @@ import { courseState } from "../../modules/Course/reducer";
 import { fetchProfiles } from "../../modules/Profile/actions";
 import { IProfile, IProfileStatus } from "../../modules/Profile/interface";
 import { profileState } from "../../modules/Profile/reducer";
-import { fetchStudents } from "../../modules/Students/actions";
+import { fetchStudents, getStatusValue } from "../../modules/Students/actions";
 import { Status } from "../../modules/Students/constants";
 import { IStudent } from "../../modules/Students/interface";
 import { studentState } from "../../modules/Students/reducer";
@@ -98,22 +98,6 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
     }
   };
 
-  const getStatusValue = (profile: IProfile | undefined) => {
-    if (!profiles) return "";
-    let latestStatus =
-      Array.isArray(profile?.status) && !profile?.status.length
-        ? []
-        : profile?.status || [];
-
-    let statusValue = !profile?.status.length
-      ? "withdrawn"
-      : latestStatus.reduce((a: IProfileStatus, b: IProfileStatus) =>
-          a.date > b.date ? a : b,
-        ).type;
-
-    return Status[statusValue];
-  };
-
   const fuzzySearch = useCallback(() => {
     if (filter === "") return data;
 
@@ -151,7 +135,6 @@ export const useGetStudentData = (initialValue: InitialValue = {}) => {
     data: fuzzySearch(),
     loading,
     student,
-    getStatusValue,
     setFilter,
   };
 };

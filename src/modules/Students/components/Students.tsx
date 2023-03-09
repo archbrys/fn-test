@@ -9,6 +9,7 @@ import { useGetStudentData } from "../../../common/hooks/useGetUserData";
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CustomImage, InputText } from "../styles";
+import { getStatusValue } from "../actions";
 
 const Students = (): JSX.Element => {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ const Students = (): JSX.Element => {
     setSortDepthKey,
     sort,
   } = useTableState();
-  const { data, loading, getStatusValue, setFilter } = useGetStudentData();
-  console.log(loading);
+  const { data, loading, setFilter } = useGetStudentData();
+
   const sanitizeData = useMemo(
     (): ITableData[] =>
       data.map((student) => {

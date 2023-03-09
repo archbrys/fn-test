@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getStatusValue } from "../../modules/Students/actions";
 import { ITableData } from "../Table/interface";
 
 const useTableState = () => {
@@ -15,7 +16,12 @@ const useTableState = () => {
 
   const comparator = (key: any) => (a: ITableData, b: ITableData) => {
     if (key) {
-      return getComparatorCondition(a[key], b[key], sortBy);
+      let aa =
+        sortBy === "status" ? { [sortBy]: getStatusValue(a[key]) } : a[key];
+      let bb =
+        sortBy === "status" ? { [sortBy]: getStatusValue(b[key]) } : b[key];
+
+      return getComparatorCondition(aa, bb, sortBy);
     }
 
     return getComparatorCondition(a, b, sortBy);
