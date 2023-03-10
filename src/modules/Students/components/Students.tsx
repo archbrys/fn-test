@@ -85,40 +85,38 @@ const Students = (): JSX.Element => {
   };
 
   return (
-    <>
-      <Container>
-        <InputText
-          className="mW-100"
-          type="email"
-          placeholder="Search"
-          onChange={(e) => setFilter(e.target.value)}
-          disabled={loading}
-        />
+    <Container>
+      <InputText
+        className="mW-100"
+        type="email"
+        placeholder="Search"
+        onChange={(e) => setFilter(e.target.value)}
+        disabled={loading}
+      />
 
-        <Table
-          data={sort(sanitizeData)}
-          headers={TableHeader}
-          onSort={handleSort}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onRowClick={handleRowClick}
-          loading={loading}
-        >
-          {{
-            [StudentProperties.Name]: (data: ITableData) =>
-              sanitizeTableData(data, StudentProperties.Name),
-            [OtherProperties.Profile]: (data: ITableData) =>
-              sanitizeTableData(data, OtherProperties.Profile),
-            [OtherProperties.Major]: (data: ITableData) =>
-              sanitizeTableData(data, OtherProperties.Major),
-            [OtherProperties.Status]: (data: ITableData) =>
-              sanitizeTableData(data, OtherProperties.Status),
-            [OtherProperties.Total_Course]: (data: ITableData) =>
-              sanitizeTableData(data, OtherProperties.Total_Course),
-          }}
-        </Table>
-      </Container>
-    </>
+      <Table
+        data={sort(sanitizeData)}
+        headers={TableHeader}
+        onSort={handleSort}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onRowClick={handleRowClick}
+        loading={loading}
+      >
+        {{
+          [StudentProperties.Name]: (data: ITableData) =>
+            sanitizeTableData(data, StudentProperties.Name),
+          [OtherProperties.Profile]: (data: ITableData) =>
+            sanitizeTableData(data, OtherProperties.Profile),
+          [OtherProperties.Major]: (data: ITableData) =>
+            sanitizeTableData(data, OtherProperties.Major),
+          [OtherProperties.Status]: (data: ITableData) =>
+            sanitizeTableData(data, OtherProperties.Status),
+          [OtherProperties.Total_Course]: (data: ITableData) =>
+            sanitizeTableData(data, OtherProperties.Total_Course),
+        }}
+      </Table>
+    </Container>
   );
 };
 

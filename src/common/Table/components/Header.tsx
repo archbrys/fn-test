@@ -11,8 +11,11 @@ const Header = ({ headers, sortBy, sortDirection, onSort }: IHeader) => {
   };
 
   const renderHeaderCell = (key: string, headerCell: ITableHeader) => {
+    const cursor = headerCell.isSortable ? "pointer" : "default";
+
     return (
       <th
+        style={{ cursor }}
         onClick={() =>
           handleSort(headerCell.id, headerCell.isSortable, headerCell.key)
         }

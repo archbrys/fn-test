@@ -16,16 +16,12 @@ export const fetchStudents = createAsyncThunk(
 );
 
 export const getStatusValue = (profile: IProfile | undefined) => {
-  let latestStatus =
+  let statusValue =
     Array.isArray(profile?.status) && !profile?.status.length
-      ? []
-      : profile?.status || [];
-
-  let statusValue = !profile?.status.length
-    ? "withdrawn"
-    : latestStatus.reduce((a: IProfileStatus, b: IProfileStatus) =>
-        a.date > b.date ? a : b,
-      ).type;
+      ? "withdrawn"
+      : profile?.status.reduce((a: IProfileStatus, b: IProfileStatus) =>
+          a.date > b.date ? a : b,
+        ).type || "withdrawn";
 
   return Status[statusValue];
 };
